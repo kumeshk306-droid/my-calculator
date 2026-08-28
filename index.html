@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Calculator</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #000;
+    color: white;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calculator {
+    width: 100%;
+    max-width: 390px;
+    padding: 20px;
+}
+
+/* Display */
+
+.display {
+    min-height: 170px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+
+    padding: 20px 10px;
+    margin-bottom: 20px;
+
+    overflow: hidden;
+}
+
+.expression {
+    font-size: 52px;
+    color: #f5f5f5;
+    word-break: break-all;
+}
+
+.result {
+    font-size: 28px;
+    color: #999;
+    margin-top: 10px;
+}
+
+/* Buttons */
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+button {
+    height: 75px;
+    border: none;
+    border-radius: 50%;
+
+    background: #292929;
+    color: white;
+
+    font-size: 27px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: 0.1s;
+}
+
+button:active {
+    transform: scale(0.90);
+}
+
+/* Special buttons */
+
+.function {
+    color: #ff6b6b;
+}
+
+.operator {
+    background: #351416;
+    color: #ff6666;
+}
+
+.equal {
+    background: #ff6666;
+    color: white;
+}
+
+/* Zero button */
+
+.zero {
+    grid-column: span 2;
+    border-radius: 40px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+    <div class="display">
+
+        <div class="expression" id="expression">
+            0
+        </div>
+
+        <div class="result" id="result"></div>
+
+    </div>
+
+
+    <div class="buttons">
+
+        <!-- Row 1 -->
+
+        <button class="function" onclick="clearAll()">AC</button>
+
+        <button onclick="deleteLast()">⌫</button>
+
+        <button onclick="toggleSign()">+/−</button>
+
+        <button class="operator" onclick="operatorPressed('÷')">
+            ÷
+        </button>
+
+
+        <!-- Row 2 -->
+
+        <button onclick="numberPressed('7')">7</button>
+
+        <button onclick="numberPressed('8')">8</button>
+
+        <button onclick="numberPressed('9')">9</button>
+
+        <button class="operator" onclick="operatorPressed('×')">
+            ×
+        </button>
+
+
+        <!-- Row 3 -->
+
+        <button onclick="numberPressed('4')">4</button>
+
+        <button onclick="numberPressed('5')">5</button>
+
+        <button onclick="numberPressed('6')">6</button>
+
+        <button class="operator" onclick="operatorPressed('-')">
+            −
+        </button>
+
+
+        <!-- Row 4 -->
+
+        <button onclick="numberPressed('1')">1</button>
+
+        <button onclick="numberPressed('2')">2</button>
+
+        <button onclick="numberPressed('3')">3</button>
+
+        <button class="operator" onclick="operatorPressed('+')">
+            +
+        </button>
+
+
+        <!-- Row 5 -->
+
+        <button onclick="percentage()">%</button>
+
+        <button class="zero" onclick="numberPressed('0')">
+            0
+        </button>
+
+        <button onclick="numberPressed('.')">.</button>
+
+        <button class="equal" onclick="calculate()">
+            =
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let expression = "";
+
+let expressionDisplay =
+    document.getElementById("expression");
+
+let resultDisplay =
+    document.getElementById("result");
+
+let justCalculated = false;
+
+
+/* Number */
+
+function numberPressed(number) {
+
+    if (justCalculated) {
+
+        expression = "";
+
+        resultDisplay.innerText = "";
+
+        justCalculated = false;
+    }
+
+
+    if (number === ".") {
+
+        let parts = expression.split(/[+\-×÷]/);
+
+        let currentNumber = parts[parts.length - 1];
+
+        if (currentNumber.includes(".")) {
+            return;
+        }
+
+        if (currentNumber === "") {
+            expression += "0";
+        }
+    }
+
+
+    if (expression === "0") {
+        expression = "";
+    }
+
+    expression += number;
+
+    updateDisplay();
+}
+
+
+/* Operator */
+
+function operatorPressed(operator) {
+
+    if (expression === "") {
+        return;
+    }
+
+
+    let lastCharacter =
+        expression.slice(-1);
+
+
+    /* If operator already exists */
+
+    if ("+-×÷".includes(lastCharacter)) {
+
+        expression =
+            expression.slice(0, -1) + operator;
+
+        updateDisplay();
+
+        return;
+    }
+
+
+    /*
+       Calculate previous expression
+       before adding next operator
+    */
+
+    if (expression.includes("+") ||
+        expression.includes("-") ||
+        expression.includes("×") ||
+        expression.includes("÷")) {
+
+        let answer = calculateExpression(expression);
+
+        if (answer !== null) {
+
+            expression = String(answer);
+
+        }
+    }
+
+
+    expression += operator;
+
+    resultDisplay.innerText = "";
+
+    updateDisplay();
+}
+
+
+/* Calculate */
+
+function calculate() {
+
+    if (expression === "") {
+        return;
+    }
+
+
+    let lastCharacter =
+        expression.slice(-1);
+
+
+    if ("+-×÷".includes(lastCharacter)) {
+
+        expression =
+            expression.slice(0, -1);
+    }
+
+
+    let answer =
+        calculateExpression(expression);
+
+
+    if (answer === null) {
+
+        resultDisplay.innerText = "Error";
+
+        return;
+    }
+
+
+    resultDisplay.innerText =
+        "=" + formatNumber(answer);
+
+    expression =
+        String(answer);
+
+    justCalculated = true;
+
+    updateDisplay();
+}
+
+
+/* Calculation Engine */
+
+function calculateExpression(exp) {
+
+    try {
+
+        let cleanExpression =
+            exp.replace(/×/g, "*")
+               .replace(/÷/g, "/");
+
+
+        let answer =
+            Function(
+                '"use strict"; return (' +
+                cleanExpression +
+                ')'
+            )();
+
+
+        if (!isFinite(answer)) {
+            return null;
+        }
+
+
+        return answer;
+
+    } catch {
+
+        return null;
+    }
+}
+
+
+/* Clear */
+
+function clearAll() {
+
+    expression = "";
+
+    resultDisplay.innerText = "";
+
+    justCalculated = false;
+
+    updateDisplay();
+}
+
+
+/* Delete */
+
+function deleteLast() {
+
+    if (justCalculated) {
+
+        clearAll();
+
+        return;
+    }
+
+
+    expression =
+        expression.slice(0, -1);
+
+
+    if (expression === "") {
+        expression = "";
+    }
+
+
+    updateDisplay();
+}
+
+
+/* Plus / Minus */
+
+function toggleSign() {
+
+    if (expression === "") {
+        return;
+    }
+
+
+    let match =
+        expression.match(/(-?\d+\.?\d*)$/);
+
+
+    if (!match) {
+        return;
+    }
+
+
+    let number = match[0];
+
+    let start =
+        expression.length - number.length;
+
+
+    if (number.startsWith("-")) {
+
+        number =
+            number.substring(1);
+
+    } else {
+
+        number =
+            "-" + number;
+    }
+
+
+    expression =
+        expression.substring(0, start) +
+        number;
+
+
+    updateDisplay();
+}
+
+
+/* Percentage */
+
+function percentage() {
+
+    if (expression === "") {
+        return;
+    }
+
+
+    let match =
+        expression.match(/(\d+\.?\d*)$/);
+
+
+    if (!match) {
+        return;
+    }
+
+
+    let number =
+        parseFloat(match[0]);
+
+
+    let percentageValue =
+        number / 100;
+
+
+    expression =
+        expression.substring(
+            0,
+            expression.length - match[0].length
+        ) + percentageValue;
+
+
+    updateDisplay();
+}
+
+
+/* Display */
+
+function updateDisplay() {
+
+    expressionDisplay.innerText =
+        expression || "0";
+}
+
+
+/* Format */
+
+function formatNumber(number) {
+
+    if (Number.isInteger(number)) {
+
+        return number.toLocaleString("en-IN");
+
+    }
+
+
+    return Number(
+        number.toFixed(10)
+    ).toLocaleString("en-IN");
+}
+
+</script>
+
+</body>
+</html>
