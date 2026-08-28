@@ -14,7 +14,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -25,20 +26,22 @@ html, body {
 }
 
 body {
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 16px;
+  padding: 10px;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .calculator {
   width: 100%;
-  max-width: 390px;
-  background: #ffffff;
-  border-radius: 28px;
-  padding: 20px;
-  box-shadow: 0 12px 35px rgba(0,0,0,0.10);
+  max-width: 360px;
+  background: #fff;
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.10);
 
   transform: none !important;
   animation: none !important;
@@ -50,55 +53,55 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 
 .app-name {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
 }
 
 .top-actions {
   display: flex;
-  gap: 8px;
+  gap: 7px;
 }
 
 .small-btn {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border: 0;
   border-radius: 50%;
-  background: #f1f1f1;
-  font-size: 18px;
+  background: #eeeeee;
+  font-size: 17px;
   cursor: pointer;
 }
 
 .display {
-  min-height: 150px;
+  min-height: 125px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-end;
-  padding: 12px 4px 20px;
+  padding: 8px 2px 14px;
   overflow: hidden;
 }
 
 .expression {
   width: 100%;
   text-align: right;
-  font-size: clamp(24px, 7vw, 36px);
+  font-size: clamp(26px, 8vw, 34px);
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.15;
   word-break: break-all;
   color: #222;
 }
 
 .answer {
-  margin-top: 10px;
-  min-height: 38px;
   width: 100%;
+  min-height: 32px;
+  margin-top: 6px;
   text-align: right;
-  font-size: clamp(24px, 6vw, 32px);
+  font-size: clamp(22px, 7vw, 30px);
   font-weight: 400;
   color: #777;
   cursor: pointer;
@@ -106,8 +109,8 @@ body {
 }
 
 .status {
-  height: 22px;
-  font-size: 13px;
+  height: 18px;
+  font-size: 12px;
   color: #777;
   text-align: right;
 }
@@ -115,32 +118,33 @@ body {
 .keys {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 11px;
+  gap: 9px;
 }
 
 button.key {
   border: 0;
-  min-height: 64px;
-  border-radius: 20px;
+  width: 100%;
+  min-height: 58px;
+  border-radius: 17px;
   background: #eeeeee;
   color: #111;
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.08s ease;
 }
 
 button.key:active {
-  background: #d9d9d9;
+  background: #d8d8d8;
 }
 
 button.operator {
-  background: #e8e8e8;
+  background: #e7e7e7;
 }
 
 button.equal {
   background: #111;
-  color: white;
+  color: #fff;
 }
 
 button.clear {
@@ -153,11 +157,11 @@ button.zero {
 
 .history-panel {
   display: none;
-  margin-bottom: 14px;
-  border-radius: 18px;
-  background: #f4f4f4;
-  padding: 12px;
-  max-height: 180px;
+  margin-bottom: 10px;
+  border-radius: 16px;
+  background: #f1f1f1;
+  padding: 10px;
+  max-height: 150px;
   overflow-y: auto;
 }
 
@@ -166,13 +170,13 @@ button.zero {
 }
 
 .history-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .history-item {
-  padding: 9px 4px;
+  padding: 8px 4px;
   border-bottom: 1px solid #ddd;
   cursor: pointer;
 }
@@ -182,28 +186,30 @@ button.zero {
 }
 
 .history-expression {
-  font-size: 14px;
+  font-size: 13px;
   color: #555;
 }
 
 .history-answer {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
 }
 
 .empty-history {
   color: #888;
-  font-size: 14px;
+  font-size: 13px;
 }
+
+/* DARK MODE */
 
 .dark {
   background: #0f0f0f;
-  color: white;
+  color: #fff;
 }
 
 .dark .calculator {
   background: #181818;
-  box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.35);
 }
 
 .dark .expression {
@@ -218,7 +224,7 @@ button.zero {
 .dark button.key,
 .dark .history-panel {
   background: #292929;
-  color: white;
+  color: #fff;
 }
 
 .dark button.key:active {
@@ -226,7 +232,7 @@ button.zero {
 }
 
 .dark button.equal {
-  background: white;
+  background: #fff;
   color: #111;
 }
 
@@ -234,20 +240,42 @@ button.zero {
   border-color: #444;
 }
 
+/* SMALL PHONES */
+
 @media (max-width: 360px) {
 
+  body {
+    padding: 7px;
+  }
+
   .calculator {
-    padding: 15px;
-    border-radius: 22px;
+    max-width: 350px;
+    padding: 13px;
+    border-radius: 21px;
+  }
+
+  .topbar {
+    margin-bottom: 5px;
+  }
+
+  .display {
+    min-height: 110px;
+    padding-bottom: 10px;
   }
 
   button.key {
-    min-height: 58px;
-    border-radius: 17px;
+    min-height: 54px;
+    border-radius: 15px;
+    font-size: 20px;
   }
 
   .keys {
-    gap: 8px;
+    gap: 7px;
+  }
+
+  .small-btn {
+    width: 37px;
+    height: 37px;
   }
 }
 </style>
