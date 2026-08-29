@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#111111">
+<meta name="theme-color" content="#000000">
 <title>Calculator</title>
-
 <link rel="manifest" href="manifest.json">
 
 <style>
@@ -14,52 +13,37 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html,
-body {
+html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
   font-family: Arial, sans-serif;
-  background: #000;
-  color: #fff;
 }
 
 body {
-  min-height: 100dvh;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
+  background: #000;
+  color: #fff;
 }
 
 .calculator {
   width: 100%;
   max-width: 500px;
   min-height: 100dvh;
+  margin: 0 auto;
   background: #000;
-  padding: 18px 16px 16px;
-
+  padding: max(18px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-
-  border-radius: 0;
-  box-shadow: none;
-
-  transform: none !important;
-  animation: none !important;
-  transition: none !important;
-
+  position: relative;
   touch-action: manipulation;
 }
-
-/* TOP BAR */
 
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   min-height: 48px;
   margin-bottom: 4px;
 }
@@ -67,7 +51,6 @@ body {
 .app-name {
   font-size: 20px;
   font-weight: 600;
-  color: #fff;
 }
 
 .top-actions {
@@ -78,117 +61,75 @@ body {
 .small-btn {
   width: 42px;
   height: 42px;
-
   border: 0;
   border-radius: 50%;
-
   background: #000;
-  color: #fff;
-
+  color: inherit;
   font-size: 18px;
   cursor: pointer;
 }
 
-/* DISPLAY */
-
 .display {
   flex: 1;
-
   min-height: 0;
-
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-end;
-
   padding: 20px 4px 22px;
-
   overflow: hidden;
 }
 
-.expression {
+.expression,
+.answer {
   width: 100%;
-
   text-align: right;
-
-  font-size: clamp(34px, 10vw, 54px);
-  font-weight: 500;
-
-  line-height: 1.15;
-
-  color: #777;
-
   word-break: break-all;
 }
 
+.expression {
+  font-size: clamp(34px, 10vw, 54px);
+  font-weight: 500;
+  line-height: 1.15;
+  color: #777;
+}
+
 .answer {
-  width: 100%;
-
   min-height: 48px;
-
   margin-top: 8px;
-
-  text-align: right;
-
   font-size: clamp(42px, 12vw, 64px);
   font-weight: 500;
-
   line-height: 1.1;
-
-  color: #fff;
-
   cursor: pointer;
-
-  word-break: break-all;
 }
 
 .status {
   height: 20px;
-
   margin-top: 4px;
-
   font-size: 12px;
-
   color: #777;
-
   text-align: right;
 }
 
-/* KEYPAD */
-
 .keys {
   width: 100%;
-
   display: grid;
-
   grid-template-columns: repeat(4, 1fr);
-
   gap: 12px;
-
   padding-bottom: 4px;
 }
 
 button.key {
   width: 100%;
-
   min-height: 68px;
-
   border: 0;
-
   border-radius: 50%;
-
   background: #292929;
-
-  color: #fff;
-
+  color: inherit;
   font-size: 24px;
   font-weight: 500;
-
   cursor: pointer;
-
-  transition:
-    transform 0.08s ease,
-    background 0.08s ease;
+  transition: transform 0.08s ease, background 0.08s ease;
 }
 
 button.key:active {
@@ -212,33 +153,22 @@ button.equal {
 
 button.zero {
   grid-column: span 2;
-
   border-radius: 40px;
 }
 
 /* HISTORY */
-
 .history-panel {
   display: none;
-
   position: absolute;
-
   left: 12px;
   right: 12px;
   top: 70px;
-
-  z-index: 10;
-
+  z-index: 20;
   border-radius: 18px;
-
   background: #1c1c1c;
-
   padding: 12px;
-
   max-height: 230px;
-
   overflow-y: auto;
-
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
@@ -254,9 +184,7 @@ button.zero {
 
 .history-item {
   padding: 10px 4px;
-
   border-bottom: 1px solid #333;
-
   cursor: pointer;
 }
 
@@ -272,7 +200,6 @@ button.zero {
 .history-answer {
   font-size: 17px;
   font-weight: 600;
-  color: #fff;
 }
 
 .empty-history {
@@ -280,8 +207,247 @@ button.zero {
   font-size: 14px;
 }
 
-/* LIGHT MODE */
+/* OVERLAY + TUTORIAL */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0,0,0,0.72);
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+}
 
+.overlay.show {
+  display: flex;
+}
+
+.modal {
+  width: min(100%, 380px);
+  border-radius: 24px;
+  background: #1c1c1e;
+  color: #fff;
+  padding: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+}
+
+.modal h2 {
+  margin: 0 0 10px;
+  font-size: 24px;
+}
+
+.modal p {
+  margin: 0 0 16px;
+  line-height: 1.5;
+  color: #c7c7c7;
+}
+
+.tutorial-steps {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.tutorial-step {
+  padding: 14px;
+  border-radius: 16px;
+  background: #292929;
+  line-height: 1.45;
+}
+
+.tutorial-step strong {
+  display: block;
+  margin-bottom: 3px;
+}
+
+.modal-input {
+  width: 100%;
+  border: 1px solid #444;
+  outline: none;
+  border-radius: 14px;
+  background: #111;
+  color: #fff;
+  padding: 16px;
+  font-size: 20px;
+  text-align: center;
+  letter-spacing: 8px;
+  margin: 10px 0 8px;
+}
+
+.modal-error {
+  min-height: 18px;
+  margin-bottom: 8px;
+  color: #ff7b7b;
+  font-size: 13px;
+}
+
+.modal-btn {
+  width: 100%;
+  border: 0;
+  border-radius: 14px;
+  padding: 15px;
+  background: #ff6b6b;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* VAULT */
+.vault {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.vault.show {
+  display: flex;
+}
+
+.vault-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: max(18px, env(safe-area-inset-top)) 18px 12px;
+}
+
+.vault-title {
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.vault-lock {
+  border: 0;
+  border-radius: 14px;
+  background: #292929;
+  color: #fff;
+  padding: 11px 15px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.vault-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 8px 18px 12px;
+}
+
+.vault-tab {
+  border: 0;
+  border-radius: 14px;
+  padding: 13px 8px;
+  background: #202020;
+  color: #aaa;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.vault-tab.active {
+  background: #ff6b6b;
+  color: #fff;
+}
+
+.vault-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 18px 100px;
+}
+
+.vault-empty {
+  min-height: 55vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #888;
+  line-height: 1.5;
+}
+
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.vault-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #202020;
+}
+
+.vault-card img,
+.vault-card video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: #111;
+}
+
+.file-card {
+  min-height: 150px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.file-icon {
+  font-size: 38px;
+}
+
+.file-name {
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.file-size {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #999;
+}
+
+.delete-file {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.72);
+  color: #fff;
+  cursor: pointer;
+}
+
+.vault-add {
+  position: fixed;
+  right: 22px;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  width: 58px;
+  height: 58px;
+  border: 0;
+  border-radius: 50%;
+  background: #ff6b6b;
+  color: #fff;
+  font-size: 30px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  cursor: pointer;
+}
+
+#vaultFileInput {
+  display: none;
+}
+
+/* LIGHT MODE */
 body:not(.dark) {
   background: #f4f4f4;
   color: #111;
@@ -291,18 +457,12 @@ body:not(.dark) .calculator {
   background: #f4f4f4;
 }
 
-body:not(.dark) .app-name {
-  color: #111;
-}
-
 body:not(.dark) .small-btn {
   background: #e9e9e9;
-  color: #111;
 }
 
 body:not(.dark) button.key {
   background: #e9e9e9;
-  color: #111;
 }
 
 body:not(.dark) button.operator {
@@ -319,14 +479,33 @@ body:not(.dark) .expression {
   color: #777;
 }
 
-body:not(.dark) .answer {
+body:not(.dark) .history-panel {
+  background: #fff;
   color: #111;
 }
 
-/* SMALL PHONES */
+body:not(.dark) .history-answer {
+  color: #111;
+}
+
+body:not(.dark) .vault {
+  background: #f4f4f4;
+  color: #111;
+}
+
+body:not(.dark) .vault-tab,
+body:not(.dark) .vault-card,
+body:not(.dark) .vault-lock {
+  background: #e6e6e6;
+  color: #111;
+}
+
+body:not(.dark) .vault-tab.active {
+  background: #111;
+  color: #fff;
+}
 
 @media (max-height: 700px) {
-
   .calculator {
     padding-top: 10px;
     padding-bottom: 10px;
@@ -346,10 +525,7 @@ body:not(.dark) .answer {
   }
 }
 
-/* LARGE PHONES */
-
 @media (min-height: 800px) {
-
   button.key {
     min-height: 72px;
   }
@@ -361,245 +537,275 @@ body:not(.dark) .answer {
 </style>
 </head>
 
-<body>
+<body class="dark">
 
 <div class="calculator" id="calculator">
 
   <div class="topbar">
-
-    <div class="app-name">
-      Calculator
-    </div>
+    <div class="app-name">Calculator</div>
 
     <div class="top-actions">
-
-      <button
-        class="small-btn"
-        id="historyBtn"
-        type="button"
-        aria-label="History">
-        🕘
-      </button>
-
-      <button
-        class="small-btn"
-        id="themeBtn"
-        type="button"
-        aria-label="Theme">
-        🌙
-      </button>
-
+      <button class="small-btn" id="historyBtn" type="button" aria-label="History">🕘</button>
+      <button class="small-btn" id="themeBtn" type="button" aria-label="Theme">☀️</button>
     </div>
-
   </div>
-
 
   <div class="history-panel" id="historyPanel">
-
-    <div class="history-title">
-      History
-    </div>
-
+    <div class="history-title">History</div>
     <div id="historyList"></div>
-
   </div>
-
 
   <div class="display">
-
-    <div
-      class="expression"
-      id="expression">
-      0
-    </div>
-
-    <div
-      class="answer"
-      id="answer"
-      title="Tap to copy">
-      0
-    </div>
-
-    <div
-      class="status"
-      id="status">
-    </div>
-
+    <div class="expression" id="expression">0</div>
+    <div class="answer" id="answer" title="Tap to copy">0</div>
+    <div class="status" id="status"></div>
   </div>
-
 
   <div class="keys">
+    <button class="key clear" data-action="clear" type="button">AC</button>
+    <button class="key" data-action="backspace" type="button">⌫</button>
+    <button class="key" data-value="%" type="button">%</button>
+    <button class="key operator" data-value="/" type="button">÷</button>
 
-    <button
-      class="key clear"
-      data-action="clear"
-      type="button">
-      AC
-    </button>
+    <button class="key" data-value="7" type="button">7</button>
+    <button class="key" data-value="8" type="button">8</button>
+    <button class="key" data-value="9" type="button">9</button>
+    <button class="key operator" data-value="*" type="button">×</button>
 
-    <button
-      class="key"
-      data-action="backspace"
-      type="button">
-      ⌫
-    </button>
+    <button class="key" data-value="4" type="button">4</button>
+    <button class="key" data-value="5" type="button">5</button>
+    <button class="key" data-value="6" type="button">6</button>
+    <button class="key operator" data-value="-" type="button">−</button>
 
-    <button
-      class="key"
-      data-value="%"
-      type="button">
-      %
-    </button>
+    <button class="key" data-value="1" type="button">1</button>
+    <button class="key" data-value="2" type="button">2</button>
+    <button class="key" data-value="3" type="button">3</button>
+    <button class="key operator" data-value="+" type="button">+</button>
 
-    <button
-      class="key operator"
-      data-value="/"
-      type="button">
-      ÷
-    </button>
-
-
-    <button
-      class="key"
-      data-value="7"
-      type="button">
-      7
-    </button>
-
-    <button
-      class="key"
-      data-value="8"
-      type="button">
-      8
-    </button>
-
-    <button
-      class="key"
-      data-value="9"
-      type="button">
-      9
-    </button>
-
-    <button
-      class="key operator"
-      data-value="*"
-      type="button">
-      ×
-    </button>
-
-
-    <button
-      class="key"
-      data-value="4"
-      type="button">
-      4
-    </button>
-
-    <button
-      class="key"
-      data-value="5"
-      type="button">
-      5
-    </button>
-
-    <button
-      class="key"
-      data-value="6"
-      type="button">
-      6
-    </button>
-
-    <button
-      class="key operator"
-      data-value="-"
-      type="button">
-      −
-    </button>
-
-
-    <button
-      class="key"
-      data-value="1"
-      type="button">
-      1
-    </button>
-
-    <button
-      class="key"
-      data-value="2"
-      type="button">
-      2
-    </button>
-
-    <button
-      class="key"
-      data-value="3"
-      type="button">
-      3
-    </button>
-
-    <button
-      class="key operator"
-      data-value="+"
-      type="button">
-      +
-    </button>
-
-
-    <button
-      class="key"
-      data-value="."
-      type="button">
-      .
-    </button>
-
-    <button
-      class="key zero"
-      data-value="0"
-      type="button">
-      0
-    </button>
-
-    <button
-      class="key equal"
-      data-action="equals"
-      type="button">
-      =
-    </button>
-
+    <button class="key" data-value="." type="button">.</button>
+    <button class="key zero" data-value="0" type="button">0</button>
+    <button class="key equal" data-action="equals" type="button">=</button>
   </div>
-
 </div>
 
+<!-- FIRST TIME VAULT SETUP -->
+<div class="overlay" id="tutorialOverlay">
+  <div class="modal">
+    <h2>🔐 Hidden Vault</h2>
+    <p>Indha calculator-la private photos, videos, files save pannalaam.</p>
+
+    <div class="tutorial-steps">
+      <div class="tutorial-step">
+        <strong>1. Secret PIN set pannu</strong>
+        4-digit PIN create pannu.
+      </div>
+      <div class="tutorial-step">
+        <strong>2. Vault open</strong>
+        Calculator-la exact PIN type panni <b>=</b> press pannu.
+      </div>
+      <div class="tutorial-step">
+        <strong>3. Files add pannu</strong>
+        Vault-kulla Photos, Videos, Files add pannalaam.
+      </div>
+    </div>
+
+    <button class="modal-btn" id="startSetupBtn" type="button">Set Secret PIN</button>
+  </div>
+</div>
+
+<div class="overlay" id="pinOverlay">
+  <div class="modal">
+    <h2 id="pinTitle">Set Secret PIN</h2>
+    <p id="pinSubtitle">Choose a 4-digit PIN. Easy-a guess panna mudiyadha PIN use pannu.</p>
+
+    <input
+      id="pinInput"
+      class="modal-input"
+      type="password"
+      inputmode="numeric"
+      autocomplete="new-password"
+      maxlength="4"
+      placeholder="••••"
+    >
+
+    <div class="modal-error" id="pinError"></div>
+
+    <button class="modal-btn" id="pinSaveBtn" type="button">Continue</button>
+  </div>
+</div>
+
+<!-- VAULT -->
+<div class="vault" id="vault">
+  <div class="vault-header">
+    <div class="vault-title">🔐 Hidden Vault</div>
+    <button class="vault-lock" id="lockVaultBtn" type="button">🔒 Lock</button>
+  </div>
+
+  <div class="vault-tabs">
+    <button class="vault-tab active" data-category="photo" type="button">🖼️ Photos</button>
+    <button class="vault-tab" data-category="video" type="button">🎥 Videos</button>
+    <button class="vault-tab" data-category="file" type="button">📄 Files</button>
+  </div>
+
+  <div class="vault-content" id="vaultContent"></div>
+
+  <input id="vaultFileInput" type="file">
+  <button class="vault-add" id="addVaultFileBtn" type="button" aria-label="Add file">+</button>
+</div>
 
 <script>
 (function () {
 
-  const expressionEl =
-    document.getElementById("expression");
+  const expressionEl = document.getElementById("expression");
+  const answerEl = document.getElementById("answer");
+  const statusEl = document.getElementById("status");
 
-  const answerEl =
-    document.getElementById("answer");
+  const historyBtn = document.getElementById("historyBtn");
+  const themeBtn = document.getElementById("themeBtn");
+  const historyPanel = document.getElementById("historyPanel");
+  const historyList = document.getElementById("historyList");
 
-  const statusEl =
-    document.getElementById("status");
+  const tutorialOverlay = document.getElementById("tutorialOverlay");
+  const startSetupBtn = document.getElementById("startSetupBtn");
 
-  const historyBtn =
-    document.getElementById("historyBtn");
+  const pinOverlay = document.getElementById("pinOverlay");
+  const pinTitle = document.getElementById("pinTitle");
+  const pinSubtitle = document.getElementById("pinSubtitle");
+  const pinInput = document.getElementById("pinInput");
+  const pinError = document.getElementById("pinError");
+  const pinSaveBtn = document.getElementById("pinSaveBtn");
 
-  const themeBtn =
-    document.getElementById("themeBtn");
-
-  const historyPanel =
-    document.getElementById("historyPanel");
-
-  const historyList =
-    document.getElementById("historyList");
-
+  const vault = document.getElementById("vault");
+  const lockVaultBtn = document.getElementById("lockVaultBtn");
+  const vaultContent = document.getElementById("vaultContent");
+  const vaultFileInput = document.getElementById("vaultFileInput");
+  const addVaultFileBtn = document.getElementById("addVaultFileBtn");
 
   let expression = "";
-
   let history = [];
+  let pendingPin = "";
+  let pinSetupMode = "first";
+  let activeCategory = "photo";
+
+  const PIN_KEY = "calculator_vault_pin_hash";
+  const SETUP_KEY = "calculator_vault_setup_done";
+
+  /* =========================
+     PIN + HASH
+  ========================= */
+
+  async function hashText(text) {
+    const data = new TextEncoder().encode(text);
+
+    if (window.crypto && crypto.subtle) {
+      const hashBuffer =
+        await crypto.subtle.digest("SHA-256", data);
+
+      return Array.from(
+        new Uint8Array(hashBuffer)
+      )
+      .map(function(byte) {
+        return byte.toString(16).padStart(2, "0");
+      })
+      .join("");
+    }
+
+    return btoa(text + "_calculator_vault");
+  }
+
+
+  function isPinReady() {
+    return localStorage.getItem(SETUP_KEY) === "yes" &&
+      !!localStorage.getItem(PIN_KEY);
+  }
+
+
+  function showPinSetup(mode) {
+    pinSetupMode = mode;
+    pinInput.value = "";
+    pinError.textContent = "";
+
+    if (mode === "first") {
+      pinTitle.textContent = "Set Secret PIN";
+      pinSubtitle.textContent = "Choose your 4-digit secret PIN.";
+      pinSaveBtn.textContent = "Continue";
+    } else {
+      pinTitle.textContent = "Confirm Secret PIN";
+      pinSubtitle.textContent = "Type the same 4-digit PIN again.";
+      pinSaveBtn.textContent = "Save PIN";
+    }
+
+    pinOverlay.classList.add("show");
+
+    setTimeout(function() {
+      pinInput.focus();
+    }, 150);
+  }
+
+
+  function hideAllSetup() {
+    tutorialOverlay.classList.remove("show");
+    pinOverlay.classList.remove("show");
+  }
+
+
+  async function handlePinSave() {
+    const pin = pinInput.value.trim();
+
+    if (!/^\d{4}$/.test(pin)) {
+      pinError.textContent = "Exactly 4 digits enter pannu.";
+      return;
+    }
+
+    if (pinSetupMode === "first") {
+      pendingPin = pin;
+      showPinSetup("confirm");
+      return;
+    }
+
+    if (pin !== pendingPin) {
+      pinError.textContent = "PIN match aagala. Try again.";
+      pendingPin = "";
+      showPinSetup("first");
+      return;
+    }
+
+    const hash = await hashText(pin);
+
+    localStorage.setItem(PIN_KEY, hash);
+    localStorage.setItem(SETUP_KEY, "yes");
+
+    pendingPin = "";
+    hideAllSetup();
+
+    statusEl.textContent = "Secret PIN saved ✓";
+
+    setTimeout(function() {
+      statusEl.textContent = "";
+    }, 1800);
+  }
+
+
+  async function tryOpenVault(pin) {
+    if (!/^\d{4}$/.test(pin)) {
+      return false;
+    }
+
+    const savedHash = localStorage.getItem(PIN_KEY);
+
+    if (!savedHash) {
+      return false;
+    }
+
+    const enteredHash = await hashText(pin);
+
+    if (enteredHash !== savedHash) {
+      return false;
+    }
+
+    openVault();
+    return true;
+  }
 
 
   /* =========================
@@ -607,7 +813,6 @@ body:not(.dark) .answer {
   ========================= */
 
   function displayExpression(text) {
-
     return text
       .replace(/\*/g, "×")
       .replace(/\//g, "÷")
@@ -616,7 +821,6 @@ body:not(.dark) .answer {
 
 
   function cleanExpression(text) {
-
     return text
       .replace(/×/g, "*")
       .replace(/÷/g, "/")
@@ -625,7 +829,6 @@ body:not(.dark) .answer {
 
 
   function formatNumber(number) {
-
     if (!Number.isFinite(number)) {
       return "Can't calculate";
     }
@@ -634,8 +837,7 @@ body:not(.dark) .answer {
       return number.toExponential(8);
     }
 
-    const rounded =
-      Number(number.toFixed(10));
+    const rounded = Number(number.toFixed(10));
 
     return rounded.toLocaleString("en-IN");
   }
@@ -646,76 +848,38 @@ body:not(.dark) .answer {
   ========================= */
 
   function convertPercentage(expr) {
-
     expr = expr.replace(
       /(\d+(?:\.\d+)?)\s*([+\-*/])\s*(\d+(?:\.\d+)?)%$/,
       function(match, a, operator, b) {
-
         const first = Number(a);
-
         const percent = Number(b);
 
-
         if (operator === "+") {
-
-          return (
-            first +
-            "+" +
-            (first * percent / 100)
-          );
-
+          return first + "+" + (first * percent / 100);
         }
-
 
         if (operator === "-") {
-
-          return (
-            first +
-            "-" +
-            (first * percent / 100)
-          );
-
+          return first + "-" + (first * percent / 100);
         }
-
 
         if (operator === "*") {
-
-          return (
-            first +
-            "*" +
-            (percent / 100)
-          );
-
+          return first + "*" + (percent / 100);
         }
-
 
         if (operator === "/") {
-
-          return (
-            first +
-            "/" +
-            (percent / 100)
-          );
-
+          return first + "/" + (percent / 100);
         }
-
 
         return match;
       }
     );
 
-
     expr = expr.replace(
       /(\d+(?:\.\d+)?)%$/,
       function(match, number) {
-
-        return String(
-          Number(number) / 100
-        );
-
+        return String(Number(number) / 100);
       }
     );
-
 
     return expr;
   }
@@ -726,53 +890,30 @@ body:not(.dark) .answer {
   ========================= */
 
   function safeCalculate(expr) {
-
     if (!expr) {
       return null;
     }
 
-
-    let clean =
-      cleanExpression(expr);
-
-
-    clean =
-      clean.replace(/\s+/g, "");
-
-
-    /*
-      Remove incomplete percentage
-      and check valid characters.
-    */
+    let clean = cleanExpression(expr);
+    clean = clean.replace(/\s+/g, "");
 
     if (!/^[0-9+\-*/().%]+$/.test(clean)) {
       return null;
     }
 
-
-    /*
-      Expression cannot end
-      with an operator.
-    */
-
     if (/[+\-*/.]$/.test(clean)) {
       return null;
     }
 
-
-    clean =
-      convertPercentage(clean);
-
+    clean = convertPercentage(clean);
 
     try {
-
       const result =
         Function(
           '"use strict"; return (' +
           clean +
           ')'
         )();
-
 
       if (
         typeof result !== "number" ||
@@ -781,11 +922,9 @@ body:not(.dark) .answer {
         return null;
       }
 
-
       return result;
 
     } catch {
-
       return null;
     }
   }
@@ -796,34 +935,22 @@ body:not(.dark) .answer {
   ========================= */
 
   function updateDisplay() {
-
     expressionEl.textContent =
       expression
         ? displayExpression(expression)
         : "0";
 
-
     if (!expression) {
-
       answerEl.textContent = "0";
-
       return;
     }
 
-
-    const result =
-      safeCalculate(expression);
-
+    const result = safeCalculate(expression);
 
     if (result !== null) {
-
-      answerEl.textContent =
-        formatNumber(result);
-
+      answerEl.textContent = formatNumber(result);
     } else {
-
-      answerEl.textContent =
-        "…";
+      answerEl.textContent = "…";
     }
   }
 
@@ -833,154 +960,85 @@ body:not(.dark) .answer {
   ========================= */
 
   function addValue(value) {
-
     statusEl.textContent = "";
 
-
-    const operators =
-      "+-*/";
-
-
-    /*
-      Operator
-    */
+    const operators = "+-*/";
 
     if (operators.includes(value)) {
-
       if (!expression) {
-
         if (value === "-") {
-
           expression = "-";
-
         }
 
         updateDisplay();
-
         return;
       }
 
-
-      const last =
-        expression.slice(-1);
-
+      const last = expression.slice(-1);
 
       if (operators.includes(last)) {
-
         expression =
           expression.slice(0, -1) + value;
-
       } else {
-
         expression += value;
       }
 
-
       updateDisplay();
-
       return;
     }
 
-
-    /*
-      Decimal
-    */
-
     if (value === ".") {
-
-      const parts =
-        expression.split(/[+\-*/]/);
-
-
-      const current =
-        parts[parts.length - 1];
-
+      const parts = expression.split(/[+\-*/]/);
+      const current = parts[parts.length - 1];
 
       if (current.includes(".")) {
         return;
       }
 
-
-      if (
-        current === "" ||
-        current === "-"
-      ) {
-
+      if (current === "" || current === "-") {
         expression += "0.";
-
       } else {
-
         expression += ".";
       }
 
-
       updateDisplay();
-
       return;
     }
 
-
-    /*
-      Percentage
-    */
-
     if (value === "%") {
-
-      const last =
-        expression.slice(-1);
-
+      const last = expression.slice(-1);
 
       if (
         last &&
         !operators.includes(last) &&
         last !== "%"
       ) {
-
         expression += "%";
       }
 
-
       updateDisplay();
-
       return;
     }
 
-
-    /*
-      Number
-    */
-
     expression += value;
-
     updateDisplay();
   }
 
 
   /* =========================
-     CLEAR
+     CLEAR + BACKSPACE
   ========================= */
 
   function clearAll() {
-
     expression = "";
-
     statusEl.textContent = "";
-
     updateDisplay();
   }
 
 
-  /* =========================
-     BACKSPACE
-  ========================= */
-
   function backspace() {
-
-    expression =
-      expression.slice(0, -1);
-
+    expression = expression.slice(0, -1);
     statusEl.textContent = "";
-
     updateDisplay();
   }
 
@@ -989,52 +1047,34 @@ body:not(.dark) .answer {
      EQUALS
   ========================= */
 
-  function calculateFinal() {
-
+  async function calculateFinal() {
     if (!expression) {
       return;
     }
 
+    /*
+      Secret vault trigger:
+      exact 4-digit PIN + =
+    */
+    if (isPinReady() && /^\d{4}$/.test(expression)) {
+      const opened = await tryOpenVault(expression);
 
-    const result =
-      safeCalculate(expression);
+      if (opened) {
+        clearAll();
+        return;
+      }
+    }
 
+    const result = safeCalculate(expression);
 
     if (result === null) {
-
-      statusEl.textContent =
-        "Can't calculate";
-
+      statusEl.textContent = "Can't calculate";
       return;
     }
 
+    addHistory(expression, result);
 
-    /*
-      Save history.
-    */
-
-    addHistory(
-      expression,
-      result
-    );
-
-
-    /*
-      IMPORTANT:
-      Do NOT replace expression
-      with result.
-
-      This keeps:
-
-      3 + 3
-      6
-
-      even after pressing "=".
-    */
-
-    answerEl.textContent =
-      formatNumber(result);
-
+    answerEl.textContent = formatNumber(result);
     statusEl.textContent = "";
   }
 
@@ -1044,88 +1084,53 @@ body:not(.dark) .answer {
   ========================= */
 
   function addHistory(expr, result) {
-
     history.unshift({
       expression: expr,
       result: result
     });
 
-
     if (history.length > 20) {
-
       history.pop();
     }
-
 
     renderHistory();
   }
 
 
   function renderHistory() {
-
     if (!history.length) {
-
       historyList.innerHTML =
-        '<div class="empty-history">' +
-        'No calculations yet' +
-        '</div>';
-
+        '<div class="empty-history">No calculations yet</div>';
       return;
     }
 
-
     historyList.innerHTML = "";
 
-
     history.forEach(function(item) {
+      const div = document.createElement("div");
 
-      const div =
-        document.createElement("div");
-
-
-      div.className =
-        "history-item";
-
+      div.className = "history-item";
 
       div.innerHTML =
         '<div class="history-expression">' +
-        escapeHTML(
-          displayExpression(item.expression)
-        ) +
+        escapeHTML(displayExpression(item.expression)) +
         '</div>' +
-
         '<div class="history-answer">' +
-        escapeHTML(
-          formatNumber(item.result)
-        ) +
+        escapeHTML(formatNumber(item.result)) +
         '</div>';
 
-
-      div.addEventListener(
-        "click",
-        function() {
-
-          expression =
-            String(item.result);
-
-          historyPanel.classList.remove(
-            "show"
-          );
-
-          updateDisplay();
-
-        }
-      );
-
+      div.addEventListener("click", function() {
+        expression = String(item.result);
+        historyPanel.classList.remove("show");
+        updateDisplay();
+      });
 
       historyList.appendChild(div);
-
     });
   }
 
 
   function escapeHTML(text) {
-
     return String(text)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -1136,56 +1141,448 @@ body:not(.dark) .answer {
 
 
   /* =========================
+     INDEXEDDB VAULT
+  ========================= */
+
+  const DB_NAME = "CalculatorHiddenVault";
+  const DB_VERSION = 1;
+  const STORE_NAME = "files";
+
+  let dbPromise = null;
+
+
+  function openDatabase() {
+    if (dbPromise) {
+      return dbPromise;
+    }
+
+    dbPromise = new Promise(function(resolve, reject) {
+      const request =
+        indexedDB.open(DB_NAME, DB_VERSION);
+
+      request.onupgradeneeded =
+        function(event) {
+          const db = event.target.result;
+
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            const store =
+              db.createObjectStore(
+                STORE_NAME,
+                {
+                  keyPath: "id",
+                  autoIncrement: true
+                }
+              );
+
+            store.createIndex(
+              "category",
+              "category",
+              {
+                unique: false
+              }
+            );
+          }
+        };
+
+      request.onsuccess =
+        function(event) {
+          resolve(event.target.result);
+        };
+
+      request.onerror =
+        function() {
+          reject(request.error);
+        };
+    });
+
+    return dbPromise;
+  }
+
+
+  async function addVaultFile(file, category) {
+    const db = await openDatabase();
+
+    return new Promise(function(resolve, reject) {
+      const transaction =
+        db.transaction(STORE_NAME, "readwrite");
+
+      const store =
+        transaction.objectStore(STORE_NAME);
+
+      const request =
+        store.add({
+          category: category,
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          blob: file,
+          createdAt: Date.now()
+        });
+
+      request.onsuccess =
+        function() {
+          resolve();
+        };
+
+      request.onerror =
+        function() {
+          reject(request.error);
+        };
+    });
+  }
+
+
+  async function getVaultFiles(category) {
+    const db = await openDatabase();
+
+    return new Promise(function(resolve, reject) {
+      const transaction =
+        db.transaction(STORE_NAME, "readonly");
+
+      const store =
+        transaction.objectStore(STORE_NAME);
+
+      const index =
+        store.index("category");
+
+      const request =
+        index.getAll(category);
+
+      request.onsuccess =
+        function() {
+          resolve(request.result);
+        };
+
+      request.onerror =
+        function() {
+          reject(request.error);
+        };
+    });
+  }
+
+
+  async function deleteVaultFile(id) {
+    const db = await openDatabase();
+
+    return new Promise(function(resolve, reject) {
+      const transaction =
+        db.transaction(STORE_NAME, "readwrite");
+
+      const store =
+        transaction.objectStore(STORE_NAME);
+
+      const request =
+        store.delete(id);
+
+      request.onsuccess =
+        function() {
+          resolve();
+        };
+
+      request.onerror =
+        function() {
+          reject(request.error);
+        };
+    });
+  }
+
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024) {
+      return bytes + " B";
+    }
+
+    if (bytes < 1024 * 1024) {
+      return (bytes / 1024).toFixed(1) + " KB";
+    }
+
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  }
+
+
+  function getFileIcon(type) {
+    if (type.includes("pdf")) {
+      return "📕";
+    }
+
+    if (type.includes("word") || type.includes("document")) {
+      return "📘";
+    }
+
+    if (type.includes("zip")) {
+      return "🗜️";
+    }
+
+    return "📄";
+  }
+
+
+  async function renderVault() {
+    vaultContent.innerHTML =
+      '<div class="vault-empty">Loading vault...</div>';
+
+    let files = [];
+
+    try {
+      files = await getVaultFiles(activeCategory);
+    } catch {
+      vaultContent.innerHTML =
+        '<div class="vault-empty">' +
+        'Vault storage open aagala.<br>Browser storage allow pannirukka-nu check pannu.' +
+        '</div>';
+      return;
+    }
+
+    if (!files.length) {
+      const text =
+        activeCategory === "photo"
+          ? "🖼️ No hidden photos yet"
+          : activeCategory === "video"
+            ? "🎥 No hidden videos yet"
+            : "📄 No hidden files yet";
+
+      vaultContent.innerHTML =
+        '<div class="vault-empty">' +
+        text +
+        '<br><br>Bottom + button use panni add pannu.' +
+        '</div>';
+
+      return;
+    }
+
+    const grid =
+      document.createElement("div");
+
+    grid.className =
+      activeCategory === "file"
+        ? "vault-grid"
+        : "vault-grid";
+
+    files
+      .sort(function(a, b) {
+        return b.createdAt - a.createdAt;
+      })
+      .forEach(function(item) {
+        const card =
+          document.createElement("div");
+
+        card.className = "vault-card";
+
+        const url =
+          URL.createObjectURL(item.blob);
+
+        let content;
+
+        if (item.category === "photo") {
+          content =
+            document.createElement("img");
+
+          content.src = url;
+          content.alt = item.name;
+
+        } else if (item.category === "video") {
+          content =
+            document.createElement("video");
+
+          content.src = url;
+          content.controls = true;
+          content.preload = "metadata";
+
+        } else {
+          content =
+            document.createElement("div");
+
+          content.className = "file-card";
+
+          content.innerHTML =
+            '<div class="file-icon">' +
+            getFileIcon(item.type) +
+            '</div>' +
+            '<div>' +
+            '<div class="file-name">' +
+            escapeHTML(item.name) +
+            '</div>' +
+            '<div class="file-size">' +
+            formatFileSize(item.size) +
+            '</div>' +
+            '</div>';
+        }
+
+        card.appendChild(content);
+
+        const deleteBtn =
+          document.createElement("button");
+
+        deleteBtn.className = "delete-file";
+        deleteBtn.type = "button";
+        deleteBtn.textContent = "🗑️";
+
+        deleteBtn.addEventListener(
+          "click",
+          async function() {
+            const yes =
+              confirm(
+                '"' + item.name +
+                '" delete pannava?'
+              );
+
+            if (!yes) {
+              return;
+            }
+
+            await deleteVaultFile(item.id);
+            URL.revokeObjectURL(url);
+            renderVault();
+          }
+        );
+
+        card.appendChild(deleteBtn);
+        grid.appendChild(card);
+      });
+
+    vaultContent.innerHTML = "";
+    vaultContent.appendChild(grid);
+  }
+
+
+  function updateVaultTabs() {
+    document
+      .querySelectorAll(".vault-tab")
+      .forEach(function(tab) {
+        tab.classList.toggle(
+          "active",
+          tab.dataset.category === activeCategory
+        );
+      });
+  }
+
+
+  function openVault() {
+    historyPanel.classList.remove("show");
+    vault.classList.add("show");
+    updateVaultTabs();
+    renderVault();
+  }
+
+
+  function closeVault() {
+    vault.classList.remove("show");
+    expression = "";
+    updateDisplay();
+  }
+
+
+  document
+    .querySelectorAll(".vault-tab")
+    .forEach(function(tab) {
+      tab.addEventListener(
+        "click",
+        function() {
+          activeCategory =
+            tab.dataset.category;
+
+          updateVaultTabs();
+          renderVault();
+        }
+      );
+    });
+
+
+  addVaultFileBtn.addEventListener(
+    "click",
+    function() {
+      if (activeCategory === "photo") {
+        vaultFileInput.accept = "image/*";
+      } else if (activeCategory === "video") {
+        vaultFileInput.accept = "video/*";
+      } else {
+        vaultFileInput.accept = "*/*";
+      }
+
+      vaultFileInput.click();
+    }
+  );
+
+
+  vaultFileInput.addEventListener(
+    "change",
+    async function() {
+      const files =
+        Array.from(vaultFileInput.files || []);
+
+      if (!files.length) {
+        return;
+      }
+
+      addVaultFileBtn.disabled = true;
+      addVaultFileBtn.textContent = "…";
+
+      try {
+        for (const file of files) {
+          await addVaultFile(
+            file,
+            activeCategory
+          );
+        }
+
+        await renderVault();
+
+      } catch {
+        alert(
+          "File save aagala. Storage space check pannu."
+        );
+
+      } finally {
+        vaultFileInput.value = "";
+        addVaultFileBtn.disabled = false;
+        addVaultFileBtn.textContent = "+";
+      }
+    }
+  );
+
+
+  lockVaultBtn.addEventListener(
+    "click",
+    closeVault
+  );
+
+
+  /* =========================
      BUTTONS
   ========================= */
 
   document
     .querySelectorAll(".key")
     .forEach(function(button) {
-
       button.addEventListener(
         "click",
         function() {
-
           const value =
             button.dataset.value;
 
           const action =
             button.dataset.action;
 
-
           if (action === "clear") {
-
             clearAll();
-
             return;
           }
-
 
           if (action === "backspace") {
-
             backspace();
-
             return;
           }
-
 
           if (action === "equals") {
-
             calculateFinal();
-
             return;
           }
 
-
           if (value) {
-
             addValue(value);
           }
-
         }
       );
-
     });
 
 
@@ -1196,13 +1593,8 @@ body:not(.dark) .answer {
   historyBtn.addEventListener(
     "click",
     function() {
-
-      historyPanel.classList.toggle(
-        "show"
-      );
-
+      historyPanel.classList.toggle("show");
       renderHistory();
-
     }
   );
 
@@ -1214,17 +1606,12 @@ body:not(.dark) .answer {
   themeBtn.addEventListener(
     "click",
     function() {
-
-      document.body.classList.toggle(
-        "dark"
-      );
-
+      document.body.classList.toggle("dark");
 
       themeBtn.textContent =
         document.body.classList.contains("dark")
           ? "☀️"
           : "🌙";
-
     }
   );
 
@@ -1236,53 +1623,30 @@ body:not(.dark) .answer {
   answerEl.addEventListener(
     "click",
     async function() {
-
       const result =
         safeCalculate(expression);
-
 
       if (result === null) {
         return;
       }
 
-
-      const text =
-        String(result);
-
+      const text = String(result);
 
       try {
-
         if (navigator.clipboard) {
-
-          await navigator.clipboard.writeText(
-            text
-          );
-
-          statusEl.textContent =
-            "Copied ✓";
-
+          await navigator.clipboard.writeText(text);
+          statusEl.textContent = "Copied ✓";
         } else {
-
-          statusEl.textContent =
-            "Result: " + text;
+          statusEl.textContent = "Result: " + text;
         }
 
       } catch {
-
-        statusEl.textContent =
-          "Result: " + text;
+        statusEl.textContent = "Result: " + text;
       }
 
-
-      setTimeout(
-        function() {
-
-          statusEl.textContent = "";
-
-        },
-        1200
-      );
-
+      setTimeout(function() {
+        statusEl.textContent = "";
+      }, 1200);
     }
   );
 
@@ -1294,53 +1658,84 @@ body:not(.dark) .answer {
   document.addEventListener(
     "keydown",
     function(event) {
+      if (
+        tutorialOverlay.classList.contains("show") ||
+        pinOverlay.classList.contains("show") ||
+        vault.classList.contains("show")
+      ) {
+        return;
+      }
 
       const key = event.key;
-
 
       if (
         /^[0-9.]$/.test(key) ||
         ["+", "-", "*", "/", "%"].includes(key)
       ) {
-
         event.preventDefault();
-
         addValue(key);
-
         return;
       }
-
 
       if (
         key === "Enter" ||
         key === "="
       ) {
-
         event.preventDefault();
-
         calculateFinal();
-
         return;
       }
-
 
       if (key === "Backspace") {
-
         event.preventDefault();
-
         backspace();
-
         return;
       }
 
-
       if (key === "Escape") {
-
         event.preventDefault();
-
         clearAll();
       }
+    }
+  );
 
+
+  /* =========================
+     FIRST TIME TUTORIAL
+  ========================= */
+
+  startSetupBtn.addEventListener(
+    "click",
+    function() {
+      tutorialOverlay.classList.remove("show");
+      showPinSetup("first");
+    }
+  );
+
+
+  pinSaveBtn.addEventListener(
+    "click",
+    handlePinSave
+  );
+
+
+  pinInput.addEventListener(
+    "keydown",
+    function(event) {
+      if (event.key === "Enter") {
+        handlePinSave();
+      }
+    }
+  );
+
+
+  pinInput.addEventListener(
+    "input",
+    function() {
+      pinInput.value =
+        pinInput.value
+          .replace(/\D/g, "")
+          .slice(0, 4);
     }
   );
 
@@ -1350,8 +1745,11 @@ body:not(.dark) .answer {
   ========================= */
 
   updateDisplay();
-
   renderHistory();
+
+  if (!isPinReady()) {
+    tutorialOverlay.classList.add("show");
+  }
 
 })();
 </script>
